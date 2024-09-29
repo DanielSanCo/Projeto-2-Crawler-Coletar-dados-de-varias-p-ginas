@@ -1,0 +1,74 @@
+1 - Instalar scrapy
+    a - Entrar na pasta.
+    b - Digitar cmd no caminho e entrar no cmd
+    c - Criar um ambiente virtual
+        * > python -m venv nome_ambiente
+    d - Verificar se criou
+        * > dir
+    e - Ativar ambiente virtual
+        * > nome_ambiente\Scripts\activate
+    f - Instalar scrapy
+        * > pip install scrapy
+    g - Se o pip estiver desatualizado:
+        * > python -m pip install --upgrade pip
+2 - Criar projeto scrapy
+    a - Abrir pasta
+    b - Abrir terminal -> ctrl + j
+    c - Ativar ambiente virtual
+        * > nome_ambiente\Scripts\activate
+    d - Criar projeto
+        * > scrapy startproject nome_projeto
+    e - Entrar no projeto
+        * > cd nome_projeto
+    f - Criar arquivo de projeto na pasta spider
+        * > Ir na pasta nome_projeto e ir na subpasta nome_projeto
+        * > Abrir pasta spider
+        * > Criar arquivo -> nome_arquivo.py
+3 - Colocar codigos no arquivo
+    a - Codigo padrão:
+        import scrapy
+        class NomeDaClasseSpider(scrapy.Spider):
+            name = 'nomerequisicao'
+            def start_requests(self):
+                urls = ['https://nomesite.com/']
+                for url in urls:
+                    yield scrapy.Request(url=url, callback=self.parse)
+    # Coletar dados 
+            def parse(self,response):
+    # Pegar a tag que contem os dados e extrair os xpath's especificos que precisar.
+                for elemento in response.xpath("//tag[@atributo='nome_atributo']"):
+                    yield {
+                        'titulo': elemento.xpath(".//tag[@atributo='nome_atributo']/text()").get(),
+                        'snopse': elemento.xpath(".//tag[@atributo='nome_atributo']/text()").get(),
+                        'atores': elemento.xpath(".//tag[@atributo='nome_atributo']/text()").getall()
+                    }
+4 - Pegar dado da pagina, inspecionar
+    a - Abrir scrapy shell no terminal
+        * > scrapy shell 'https://www.site-link.com/page=1'
+    b - Selecionar elemento da página
+    c - Montar xpath
+    d - Terminal shell:
+        * > response.xpath("//tag[@atributo='nome']/@href").get()
+        Se pegou o valor necessário:
+        * > response.xpath("//tag[@atributo='nome']/@href").get().split('=')
+        Pega o indice de mudança
+        * > response.xpath("//tag[@atributo='nome']/@href").get().split('=')[1]
+5 - Continuação do codigo: Pegar dados de varias páginas
+                try:
+                    numero_proxima_pagina = response.xpath("//tag[@atributo='nome_atributo']/a/@href").get().split('=')[1]
+                    print('#'*20)
+                    print(numero_proxima_pagina)
+                    print('#'*20)
+                    if numero_proxima_pagina is not None:
+                        link_proxima_pagina = f'https://www.site-link.com/page={numero_proxima_pagina}'
+                        print('#'*20)
+                        print(link_proxima_pagina)
+                        print('#'*20)
+                        yield scrapy.Request(url=link_proxima_pagina, callback=self.parse)
+                except:
+                    print('Chegamos na ultima página')
+6 - Rodar projeto
+    a - Codigo para Rodar
+        * > scrapy crawl nome_projeto
+    b - Colocar projeto em CSV
+        * > scrapy crawl nome_projeto -O nome_arquivo.csv

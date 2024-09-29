@@ -1,0 +1,5 @@
+# Desafio
+
+1 - Crie uma spider que navega até o site https://www.goodreads.com/quotes
+2 - Extrai todas citações, autores e tags que estão nesta pagina
+3 - Exporte esse resultado para um arquivo CSV
